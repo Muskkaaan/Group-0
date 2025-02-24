@@ -20,14 +20,12 @@
             width: 50%;
             margin: auto;
         }
-        input, button {
+        button {
             padding: 10px;
             margin: 10px;
             font-size: 16px;
             border-radius: 5px;
             border: 1px solid #ccc;
-        }
-        button {
             background-color: #28a745;
             color: white;
             cursor: pointer;
@@ -49,33 +47,22 @@
 
     <div class="container">
         <h2>Upload Your Sudoku File</h2>
-        <p>Enter your email and upload your Excel file below.</p>
+        <p>Click the button below to upload your Excel file.</p>
         
-        <input type="email" id="email" placeholder="Enter your email" required>
-        <br>
         <button id="uploadBtn">Upload File</button>
         
         <div class="success-message" id="successMessage">
             ✅ <b>Upload Successful!</b><br>
             Your file has been uploaded.  
-            <p><b>File Link:</b> <a id="fileLink" href="#" target="_blank"></a></p>
+            <p><b>File Link:</b> <input type="text" id="fileLink" readonly onclick="copyToClipboard()"></p>
+            <p><b>Copy the link above</b> and paste it in the survey field below.</p>
         </div>
-
-        <!-- Hidden Verint survey field -->
-        <input type="hidden" id="i3_i1">
     </div>
 
     <script>
-        const client = filestack.init('AoLjIY0WWR22H1ECPOnyVz');  // Replace with your Filestack API Key
+        const client = filestack.init('AoLjIY0WWR22H1ECPOnyVz'); // Replace with your Filestack API Key
 
         document.getElementById('uploadBtn').addEventListener('click', function () {
-            let userEmail = document.getElementById('email').value;
-
-            if (!userEmail) {
-                alert("Please enter your email before uploading.");
-                return;
-            }
-
             client.picker({
                 accept: ['.xls', '.xlsx'],
                 maxFiles: 1,
@@ -84,21 +71,18 @@
                     let fileUrl = result.filesUploaded[0].url;
                     
                     // Display success message
-                    document.getElementById('fileLink').href = fileUrl;
-                    document.getElementById('fileLink').innerText = "Click Here to View File";
+                    document.getElementById('fileLink').value = fileUrl;
                     document.getElementById('successMessage').style.display = "block";
-
-                    // Save to Verint survey field
-                    document.getElementById('verintFileLinkField').value = fileUrl;
-                    
-                    // Store in Verint survey field (replace 'survey_field_id' with actual Verint field ID)
-                    let verintField = document.querySelector("[id^='survey_field_id']");
-                    if (verintField) {
-                        verintField.value = fileUrl;
-                    }
                 }
             }).open();
         });
+
+        function copyToClipboard() {
+            let copyText = document.getElementById("fileLink");
+            copyText.select();
+            document.execCommand("copy");
+            alert("File link copied! Paste it in the survey field.");
+        }
     </script>
 
 </body>
